@@ -22,11 +22,12 @@ namespace DataTracking.Data
         {
             var changeEntity = ChangeTracker.Entries()
                 .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified || x.State == EntityState.Deleted)
-                .ToList();           
-            foreach (var entity in changeEntity) {
+                .ToList();
+            foreach (var entity in changeEntity)
+            {
                 var logging = new AuditLog
                 {
-                    session_id = _userContext.getSessionValue(), //header
+                    session_id = _userContext.getSessionValue(),
                     action = entity.State.ToString(),
                     entity = entity.Entity.GetType().Name,
                     timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
@@ -34,6 +35,7 @@ namespace DataTracking.Data
                 };
                 auditLogs.Add(logging);
             }
+
             return base.SaveChangesAsync(cancellationToken);
         }     
         private string GetModified(EntityEntry entityEntry)
