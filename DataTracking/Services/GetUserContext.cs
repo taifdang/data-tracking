@@ -9,7 +9,7 @@
         }
         public string getSessionValue()
         {
-            _context.HttpContext!.Items.TryGetValue("uid", out var sessionId);
+            _context.HttpContext!.Items.TryGetValue("users", out var sessionId);
             var sessionValue = sessionId?.ToString();
             return sessionValue ?? default!;                    
         }

@@ -23,11 +23,12 @@ namespace DataTracking.Data
             var changeEntity = ChangeTracker.Entries()
                 .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified || x.State == EntityState.Deleted)
                 .ToList();
+            var sessionId = _userContext.getSessionValue();
             foreach (var entity in changeEntity)
             {
                 var logging = new AuditLog
                 {
-                    session_id = _userContext.getSessionValue(),
+                    session_id = sessionId,
                     action = entity.State.ToString(),
                     entity = entity.Entity.GetType().Name,
                     timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),

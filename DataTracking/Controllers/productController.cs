@@ -4,6 +4,8 @@ using DataTracking.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace DataTracking.Controllers
 {
@@ -11,19 +13,22 @@ namespace DataTracking.Controllers
     [ApiController]
     public class productController : ControllerBase
     {
-        private readonly DatabaseContext _db;      
-        public productController(DatabaseContext db)
+        private readonly DatabaseContext _db;
+        private readonly ILogger<productController> _logger;
+        public productController(DatabaseContext db,ILogger<productController> logger)
         {
             _db = db;        
+            _logger = logger;   
         }
         [HttpGet]
         public async Task<IActionResult> getData()
         {
             try
             {             
-                var data = await _db.products.ToListAsync();              
+                var data = await _db.products.ToListAsync();            
+                _logger.LogInformation("Retrieved all products.{@Products}", data);
                 return Ok(data);
-
+             
             }
             catch
             {
@@ -36,7 +41,9 @@ namespace DataTracking.Controllers
             {
                 var product = new Products { name = DTO.name, price = DTO.price, stock = DTO.stock };
                 _db.products.Add(product);
-                await _db.SaveChangesAsync();              
+                await _db.SaveChangesAsync();
+                //[command]: ("{@_val}",val) = object | ("{_val}",val) = string
+                _logger.LogInformation("Create new product {@Product}",product);
                 return Ok("success");
             }
             catch(Exception ex)
